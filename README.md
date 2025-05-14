@@ -3,7 +3,7 @@
 
 The code for caption generation and merging is located in the `scripts/` folder.
 
----
+
 
 ## 🗃️ Dataset File
 
