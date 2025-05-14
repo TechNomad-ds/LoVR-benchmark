@@ -1,4 +1,4 @@
-# LoVR-benchmark
+# LoVR Benchmark
 ## 📁 Dataset Generation Code
 
 The code for caption generation and merging is located in the `scripts/` folder.
