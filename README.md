@@ -1,7 +1,4 @@
 # LoVR Benchmark
-当然可以，以下是将你提供的中文内容完整翻译为英文的版本，同时保留了原有的格式和结构，适用于 README 或文档说明：
-
----
 
 ## 📁 Dataset Generation Code
 
