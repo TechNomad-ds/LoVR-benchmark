@@ -20,7 +20,7 @@ Parameters:
 - `--output_dir`: Output directory for the segmented video clips  
 - `--max_workers`: Maximum number of threads for concurrent processing  
 
-Execution Command:
+Example Command:
 
 ```bash
 python clip_segmentation.py \
@@ -44,7 +44,7 @@ Parameters:
 - `--chunk-idx`: Index of the current chunk being processed (starting from 0)  
 - `--LOG_FILE`: Log output file path (optional)  
 
-Execution Command (Chunked Processing):
+Example Command (Chunked Processing):
 
 ```bash
 export CKPT=/path/to/model_weights
