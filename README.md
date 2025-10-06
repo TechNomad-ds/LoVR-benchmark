@@ -83,6 +83,12 @@ python caption_merger.py \
     --num-workers 50
 ```
 
+## 4. Evaluation Code and Scripts
+
+The evaluation pipeline is located in the `evaluation_script/` directory:
+
+- `evaluation_script/code/`: Contains model-specific evaluation implementations.
+- `evaluation_script/scripts/`: Shell scripts to run evaluations with predefined configurations.
 
 
 ## 🗃️ Dataset File
