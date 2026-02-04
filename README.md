@@ -2,7 +2,7 @@
 
 ## 📁 Dataset Generation Code
 
-This project consists of three core steps. The code is located in the `scripts/` folder.
+This project consists of three core steps. The code is located in the `data_generation/` folder.
 
 1. **Clip Segmentation**
 2. **Caption Generation**
@@ -10,7 +10,7 @@ This project consists of three core steps. The code is located in the `scripts/`
 
 Please follow the order above when executing the steps.
 
-### 1. Video Segmentation (`clip_segmentation.py`)
+### 1. Clip Segmentation (`clip_segmentation.py`)
 
 This script splits videos in the input folder into smaller clips based on certain rules and saves them to a specified directory.
 
@@ -23,6 +23,7 @@ Parameters:
 Example Command:
 
 ```bash
+cd data_generation
 python clip_segmentation.py \
     --input_folder /path/to/your/videos \
     --output_dir /path/to/output/clips \
@@ -42,13 +43,14 @@ Parameters:
 - `--batch-size`: Batch size used during inference  
 - `--num-chunks`: Number of chunks to split the task into  
 - `--chunk-idx`: Index of the current chunk being processed (starting from 0)  
-- `--LOG_FILE`: Log output file path (optional)  
+- `--rerun`: (optional) Rerun even if result already exists  
+- `--debug`: (optional) Enable debug mode  
 
 Example Command (Chunked Processing):
 
 ```bash
+cd data_generation
 export CKPT=/path/to/model_weights
-export BASE=/path/to/workdir
 CHUNKS=8
 IDX=0
 LOG_FILE=output_log_${IDX}.log
@@ -66,30 +68,38 @@ python caption_generator.py \
 
 ### 3. Merge Caption Results (`caption_merger.py`)
 
-This script merges all generated caption files from individual chunks into a single final output file in JSONL format.
+This script merges caption data and writes the final output to a single JSONL file. It supports resuming: already processed videos in the result file will be skipped.
 
 Parameters:
 
-- `--cap-file`: Output file path after merging  
-- `--result-file`: Paths to all chunk result files (wildcard matching supported)  
+- `--cap-file`: Input JSONL file containing all caption data  
+- `--result-file`: Output file path for the merged result (also used for resume)  
 - `--num-workers`: Number of workers for parallel processing  
 
 Example Command:
 
 ```bash
+cd data_generation
 python caption_merger.py \
-    --cap-file /path/to/final_caption_output.jsonl \
-    --result-file "/path/to/results/result_0_*.jsonl" \
+    --cap-file /path/to/caption_data.jsonl \
+    --result-file /path/to/final_merged_output.jsonl \
     --num-workers 50
 ```
 
-## 4. Evaluation Code and Scripts
+---
 
-The evaluation pipeline is located in the `evaluation_script/` directory:
+## 📊 Evaluation Code and Scripts
 
-- `evaluation_script/code/`: Contains model-specific evaluation implementations.
-- `evaluation_script/scripts/`: Shell scripts to run evaluations with predefined configurations.
+The evaluation pipeline is located in the `evaluate/` directory.
 
+- **`evaluate/models/`** – Model-specific evaluation implementations (e.g. CLIP, SigLIP, VideoCLIP-XL, LanguageBind, MM-Embed).
+- **`evaluate/run_*.sh`** – Shell scripts to run evaluations with predefined configurations (e.g. `run_LanguageBind.sh`, `run_jina-clip-v2.sh`).
+
+Evaluation supports **text-to-video** and **video-to-text** retrieval and computes **pass@k** metrics. For full usage, pipeline stages, and how to add a custom model, see **[evaluate/README.md](evaluate/README.md)**.
+
+Pre-trained weights for supported models are available at **ModelScope**: `thirstylearning/lovr_models`. Download and extract them under `evaluate/models/` so that each model resides in its own subdirectory.
+
+---
 
 ## ⚠️ Responsible Use Policy
 
