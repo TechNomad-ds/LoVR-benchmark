@@ -1,55 +1,133 @@
 # LoVR Benchmark
 
-## 📁 Dataset Generation Code
+Official repository for **LoVR: A Benchmark for Long Video Retrieval in Multimodal Contexts**.
 
-This project consists of three core steps. The code is located in the `data_generation/` folder.
+LoVR is a large-scale benchmark designed to evaluate **long video–text retrieval** in realistic multimodal scenarios.
+The benchmark contains **467 long videos and 40,804 fine-grained clips**, each paired with detailed captions for both **clip-level** and **video-level retrieval tasks**.
+
+The repository provides:
+
+* Dataset generation pipeline
+* Caption generation framework
+* Benchmark evaluation scripts
+* Model evaluation implementations
+
+---
+
+# Pipeline Overview
+
+The LoVR dataset is constructed using a **three-stage pipeline**:
 
 1. **Clip Segmentation**
+   Segment long videos into fine-grained clips based on visual scene changes.
+
 2. **Caption Generation**
-3. **Merge Captions**
+   Generate detailed captions for each clip using Vision-Language Models (VLMs).
 
-Please follow the order above when executing the steps.
+3. **Caption Aggregation**
+   Merge clip-level captions into coherent long-video descriptions.
 
-### 1. Clip Segmentation (`clip_segmentation.py`)
+The implementation of these steps is provided in the `data_generation/` directory.
 
-This script splits videos in the input folder into smaller clips based on certain rules and saves them to a specified directory.
+---
 
-Parameters:
+# Project Structure
 
-- `--input_folder`: Path to the folder containing original video files  
-- `--output_dir`: Output directory for the segmented video clips  
-- `--max_workers`: Maximum number of threads for concurrent processing  
+```
+LoVR/
+│
+├── data_generation/
+│   ├── clip_segmentation.py
+│   ├── caption_generator.py
+│   ├── caption_merger.py
+│
+├── evaluate/
+│   ├── models/
+│   ├── run_*.sh
+│   └── README.md
+│
+└── README.md
+```
 
-Example Command:
+---
+
+# Dataset Generation
+
+The dataset generation pipeline consists of **three steps**.
+Please execute them **in the following order**.
+
+```
+Clip Segmentation → Caption Generation → Caption Merging
+```
+
+All scripts are located in:
+
+```
+data_generation/
+```
+
+---
+
+# 1. Clip Segmentation
+
+Script:
+
+```
+clip_segmentation.py
+```
+
+This script segments long videos into clips based on visual changes.
+
+### Parameters
+
+| Parameter        | Description                          |
+| ---------------- | ------------------------------------ |
+| `--input_folder` | Directory containing original videos |
+| `--output_dir`   | Output directory for generated clips |
+| `--max_workers`  | Number of parallel workers           |
+
+### Example
 
 ```bash
 cd data_generation
+
 python clip_segmentation.py \
-    --input_folder /path/to/your/videos \
+    --input_folder /path/to/videos \
     --output_dir /path/to/output/clips \
     --max_workers 50
 ```
 
-### 2. Caption Generation (`caption_generator.py`)
+---
 
-This script generates captions for the video clips produced in the previous step.
+# 2. Caption Generation
 
-Parameters:
+Script:
 
-- `--model-path`: Path to the model weights file  
-- `--video-folder`: Directory containing the video clips from the previous step  
-- `--jsonl-file`: Input JSONL file recording video clip information  
-- `--result-file`: Output file path for results (generated per chunk)  
-- `--batch-size`: Batch size used during inference  
-- `--num-chunks`: Number of chunks to split the task into  
-- `--chunk-idx`: Index of the current chunk being processed (starting from 0)  
-- `--rerun`: (optional) Rerun even if result already exists  
-- `--debug`: (optional) Enable debug mode  
+```
+caption_generator.py
+```
 
-Example Command (Chunked Processing):
+This script generates captions for the segmented clips using a **Vision-Language Model (VLM)**.
+
+### Parameters
+
+| Parameter        | Description                         |
+| ---------------- | ----------------------------------- |
+| `--model-path`   | Path to model checkpoint            |
+| `--video-folder` | Directory containing video clips    |
+| `--jsonl-file`   | JSONL file containing clip metadata |
+| `--result-file`  | Output caption file                 |
+| `--batch-size`   | Inference batch size                |
+| `--num-chunks`   | Number of task chunks               |
+| `--chunk-idx`    | Current chunk index                 |
+| `--rerun`        | Rerun existing results              |
+| `--debug`        | Debug mode                          |
+
+### Example
 
 ```bash
 cd data_generation
+
 export CKPT=/path/to/model_weights
 CHUNKS=8
 IDX=0
@@ -66,43 +144,117 @@ python caption_generator.py \
     > "$LOG_FILE" 2>&1 &
 ```
 
-### 3. Merge Caption Results (`caption_merger.py`)
+This script supports **chunked processing**, enabling distributed inference across multiple GPUs.
 
-This script merges caption data and writes the final output to a single JSONL file. It supports resuming: already processed videos in the result file will be skipped.
+---
 
-Parameters:
+# 3. Caption Merging
 
-- `--cap-file`: Input JSONL file containing all caption data  
-- `--result-file`: Output file path for the merged result (also used for resume)  
-- `--num-workers`: Number of workers for parallel processing  
+Script:
 
-Example Command:
+```
+caption_merger.py
+```
+
+This script merges all generated captions into a final JSONL file.
+
+It supports **resume functionality** — previously processed videos will be skipped automatically.
+
+### Parameters
+
+| Parameter       | Description              |
+| --------------- | ------------------------ |
+| `--cap-file`    | Input caption JSONL file |
+| `--result-file` | Output merged file       |
+| `--num-workers` | Number of workers        |
+
+### Example
 
 ```bash
 cd data_generation
+
 python caption_merger.py \
     --cap-file /path/to/caption_data.jsonl \
-    --result-file /path/to/final_merged_output.jsonl \
+    --result-file /path/to/final_output.jsonl \
     --num-workers 50
 ```
 
 ---
 
-## 📊 Evaluation Code and Scripts
+# Evaluation
 
-The evaluation pipeline is located in the `evaluate/` directory.
+The evaluation pipeline is located in:
 
-- **`evaluate/models/`** – Model-specific evaluation implementations (e.g. CLIP, SigLIP, VideoCLIP-XL, LanguageBind, MM-Embed).
-- **`evaluate/run_*.sh`** – Shell scripts to run evaluations with predefined configurations (e.g. `run_LanguageBind.sh`, `run_jina-clip-v2.sh`).
+```
+evaluate/
+```
 
-Evaluation supports **text-to-video** and **video-to-text** retrieval and computes **pass@k** metrics. For full usage, pipeline stages, and how to add a custom model, see **[evaluate/README.md](evaluate/README.md)**.
+It supports evaluation for:
 
-Pre-trained weights for supported models are available at **ModelScope**: `thirstylearning/lovr_models`. Download and extract them under `evaluate/models/` so that each model resides in its own subdirectory.
+* **Text-to-Video Retrieval**
+* **Video-to-Text Retrieval**
+* **Text-to-Clip Retrieval**
+* **Clip-to-Text Retrieval**
+
+### Directory Description
+
+| Directory            | Description                      |
+| -------------------- | -------------------------------- |
+| `evaluate/models/`   | Model-specific implementations   |
+| `evaluate/run_*.sh`  | Evaluation scripts               |
+| `evaluate/README.md` | Detailed evaluation instructions |
+
+Supported baseline models include:
+
+* CLIP
+* SigLIP
+* VideoCLIP-XL
+* LanguageBind
+* MM-Embed
 
 ---
 
-## ⚠️ Responsible Use Policy
+# Model Weights
 
-We encourage responsible usage of the LoVR benchmark. Users should not use the dataset to develop harmful, discriminatory, or privacy-invasive applications. We recommend performing fairness audits and adhering to ethical AI principles when using this dataset.
+Pretrained model weights are available via **ModelScope**:
 
-If you make use of this dataset in your work, please cite our paper (link coming soon).
+```
+thirstylearning/lovr_models
+```
+
+Download the weights and place them under:
+
+```
+evaluate/models/
+```
+
+Each model should reside in its own subdirectory.
+
+---
+
+# Responsible Use
+
+The LoVR dataset is intended for **academic research and educational purposes only**.
+
+Users must not use this dataset to develop systems that are:
+
+* harmful
+* discriminatory
+* privacy-invasive
+
+Please ensure compliance with **ethical AI research guidelines**.
+
+---
+
+# Citation
+
+If you find **LoVR** useful in your research, please cite:
+
+```bibtex
+@article{cai2025lovr,
+  title={LoVR: A Benchmark for Long Video Retrieval in Multimodal Contexts},
+  author={Cai, Qifeng and Liang, Hao and Han, Zhaoyang and Dong, Hejun and Qiang, Meiyi and An, Ruichuan and Xu, Quanqing and Cui, Bin and Zhang, Wentao},
+  journal={arXiv preprint arXiv:2505.13928},
+  year={2025}
+}
+```
