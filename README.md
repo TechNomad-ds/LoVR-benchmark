@@ -1,45 +1,129 @@
-# LoVR Benchmark
+# LoVR: A Benchmark for Long Video Retrieval in Multimodal Contexts
 
-Official repository for **LoVR: A Benchmark for Long Video Retrieval in Multimodal Contexts**.
+<p align="center">
+  <a href="https://arxiv.org/abs/2505.13928"><img src="https://img.shields.io/badge/arXiv-2505.13928-b31b1b.svg" alt="arXiv"></a>
+  <a href="https://huggingface.co/datasets/debugger123/LoVR-benchmark"><img src="https://img.shields.io/badge/Dataset-HuggingFace-yellow.svg" alt="Dataset"></a>
+  <a href="https://modelscope.cn/models/thirstylearning/lovr_models"><img src="https://img.shields.io/badge/Models-ModelScope-blue.svg" alt="ModelScope"></a>
+  <img src="https://img.shields.io/badge/Task-Long%20Video%20Retrieval-green.svg" alt="Task">
+</p>
 
-LoVR is a large-scale benchmark designed to evaluate **long video–text retrieval** in realistic multimodal scenarios.
-The benchmark contains **467 long videos and 40,804 fine-grained clips**, each paired with detailed captions for both **clip-level** and **video-level retrieval tasks**.
+<p align="center">
+  <b>Official repository for the paper<br>
+  <i>LoVR: A Benchmark for Long Video Retrieval in Multimodal Contexts</i></b>
+</p>
 
-The repository provides:
+LoVR is a large-scale benchmark for evaluating long video--text retrieval in realistic multimodal scenarios. It is designed to assess whether retrieval models can understand fine-grained temporal content, aggregate clip-level semantics, and retrieve long videos or relevant clips from complex natural-language queries.
 
-* Dataset generation pipeline
-* Caption generation framework
-* Benchmark evaluation scripts
-* Model evaluation implementations
+The benchmark contains **467 long videos** and **40,804 fine-grained clips**, with detailed annotations supporting both **video-level retrieval** and **clip-level retrieval**.
 
 ---
 
-# Pipeline Overview
+## Overview
 
-The LoVR dataset is constructed using a **three-stage pipeline**:
+<p align="center">
+  <img src="assets/lovr_overview.png" width="90%" alt="Overview of the LoVR benchmark">
+</p>
+
+<p align="center">
+  <i>Figure 1. Overview of LoVR. The benchmark targets long video retrieval under multimodal contexts and supports both video-level and clip-level retrieval evaluation.</i>
+</p>
+
+LoVR is motivated by the gap between existing short-video retrieval benchmarks and real-world long-video search scenarios. In practical applications, users often search for events, actions, scenes, or semantic moments that are distributed across long videos. This requires models to perform both local fine-grained understanding and global semantic aggregation.
+
+LoVR provides:
+
+* A long-video retrieval benchmark with fine-grained clip annotations.
+* A reproducible data construction pipeline from raw videos to structured captions.
+* Evaluation protocols for video-level and clip-level retrieval.
+* Baseline implementations for representative vision-language and video-language models.
+
+---
+
+## News
+
+* **2025-05**: LoVR paper released on arXiv.
+* **2025-05**: Dataset released on HuggingFace.
+* **2025-05**: Evaluation scripts and baseline model implementations released.
+
+---
+
+## Benchmark Statistics
+
+| Item                            |                                                   Number |
+| ------------------------------- | -------------------------------------------------------: |
+| Long videos                     |                                                      467 |
+| Fine-grained clips              |                                                   40,804 |
+| Supported retrieval granularity |                                 Video-level / Clip-level |
+| Main evaluation settings        | Text-to-Video, Video-to-Text, Text-to-Clip, Clip-to-Text |
+
+---
+
+## Dataset
+
+The LoVR dataset is available at:
+
+```text
+https://huggingface.co/datasets/debugger123/LoVR-benchmark
+```
+
+The dataset includes long videos, segmented clips, clip-level captions, and aggregated video-level descriptions. These resources can be used to evaluate retrieval models under different granularity settings.
+
+A typical data record contains:
+
+```json
+{
+  "video_id": "example_video_id",
+  "clip_id": "example_clip_id",
+  "video_path": "path/to/video.mp4",
+  "clip_path": "path/to/clip.mp4",
+  "start_time": 12.4,
+  "end_time": 25.7,
+  "clip_caption": "A detailed caption describing the visual content of the clip.",
+  "video_caption": "An aggregated description summarizing the long video."
+}
+```
+
+Please refer to the dataset page for the complete file structure and metadata format.
+
+---
+
+## Data Construction Pipeline
+
+<p align="center">
+  <img src="assets/data_construction_pipeline.png" width="90%" alt="Data construction pipeline of LoVR">
+</p>
+
+<p align="center">
+  <i>Figure 2. Data construction pipeline. LoVR is constructed through clip segmentation, clip-level caption generation, and video-level caption aggregation.</i>
+</p>
+
+The LoVR dataset is constructed using a three-stage pipeline:
 
 1. **Clip Segmentation**
-   Segment long videos into fine-grained clips based on visual scene changes.
+   Long videos are segmented into fine-grained clips according to visual scene changes.
 
-2. **Caption Generation**
-   Generate detailed captions for each clip using Vision-Language Models (VLMs).
+2. **Clip-level Caption Generation**
+   A Vision-Language Model is used to generate detailed natural-language captions for each segmented clip.
 
-3. **Caption Aggregation**
-   Merge clip-level captions into coherent long-video descriptions.
+3. **Video-level Caption Aggregation**
+   Clip-level captions are merged into coherent long-video descriptions, enabling video-level retrieval evaluation.
 
-The implementation of these steps is provided in the `data_generation/` directory.
+All data construction scripts are provided in the `data_generation/` directory.
 
 ---
 
-# Project Structure
+## Repository Structure
 
-```
+```text
 LoVR/
+├── assets/
+│   ├── lovr_overview.png
+│   └── data_construction_pipeline.png
 │
 ├── data_generation/
 │   ├── clip_segmentation.py
 │   ├── caption_generator.py
-│   ├── caption_merger.py
+│   └── caption_merger.py
 │
 ├── evaluate/
 │   ├── models/
@@ -51,79 +135,91 @@ LoVR/
 
 ---
 
-# Dataset Generation
+## Installation
 
-The dataset generation pipeline consists of **three steps**.
-Please execute them **in the following order**.
+Clone the repository:
 
+```bash
+git clone https://github.com/your-org/LoVR.git
+cd LoVR
 ```
+
+Create the environment:
+
+```bash
+conda create -n lovr python=3.10 -y
+conda activate lovr
+pip install -r requirements.txt
+```
+
+> Note: Please install model-specific dependencies according to the baseline model you intend to evaluate. Some models may require additional packages or customized inference environments.
+
+---
+
+## Generating the Dataset
+
+The dataset generation pipeline should be executed in the following order:
+
+```text
 Clip Segmentation → Caption Generation → Caption Merging
 ```
 
 All scripts are located in:
 
-```
+```text
 data_generation/
 ```
 
----
-
-# 1. Clip Segmentation
+### 1. Clip Segmentation
 
 Script:
 
+```text
+data_generation/clip_segmentation.py
 ```
-clip_segmentation.py
-```
 
-This script segments long videos into clips based on visual changes.
+This script segments long videos into fine-grained clips based on visual scene changes.
 
-### Parameters
+| Parameter        | Description                               |
+| ---------------- | ----------------------------------------- |
+| `--input_folder` | Directory containing original long videos |
+| `--output_dir`   | Output directory for generated clips      |
+| `--max_workers`  | Number of parallel workers                |
 
-| Parameter        | Description                          |
-| ---------------- | ------------------------------------ |
-| `--input_folder` | Directory containing original videos |
-| `--output_dir`   | Output directory for generated clips |
-| `--max_workers`  | Number of parallel workers           |
-
-### Example
+Example:
 
 ```bash
 cd data_generation
 
 python clip_segmentation.py \
-    --input_folder /path/to/videos \
-    --output_dir /path/to/output/clips \
-    --max_workers 50
+  --input_folder /path/to/videos \
+  --output_dir /path/to/output/clips \
+  --max_workers 50
 ```
 
----
-
-# 2. Caption Generation
+### 2. Clip-level Caption Generation
 
 Script:
 
-```
-caption_generator.py
+```text
+data_generation/caption_generator.py
 ```
 
-This script generates captions for the segmented clips using a **Vision-Language Model (VLM)**.
-
-### Parameters
+This script generates detailed captions for segmented clips using a Vision-Language Model.
 
 | Parameter        | Description                         |
 | ---------------- | ----------------------------------- |
-| `--model-path`   | Path to model checkpoint            |
+| `--model-path`   | Path to the model checkpoint        |
 | `--video-folder` | Directory containing video clips    |
 | `--jsonl-file`   | JSONL file containing clip metadata |
 | `--result-file`  | Output caption file                 |
 | `--batch-size`   | Inference batch size                |
 | `--num-chunks`   | Number of task chunks               |
 | `--chunk-idx`    | Current chunk index                 |
-| `--rerun`        | Rerun existing results              |
-| `--debug`        | Debug mode                          |
+| `--rerun`        | Whether to rerun existing results   |
+| `--debug`        | Whether to enable debug mode        |
 
-### Example
+Example:
 
 ```bash
 cd data_generation
@@ -134,77 +230,77 @@ IDX=0
 LOG_FILE=output_log_${IDX}.log
 
 python caption_generator.py \
-    --model-path ${CKPT} \
-    --video-folder your/video/folder \
-    --jsonl-file your/jsonl/file \
-    --result-file your/result/file \
-    --batch-size 16 \
-    --num-chunks ${CHUNKS} \
-    --chunk-idx ${IDX} \
-    > "$LOG_FILE" 2>&1 &
+  --model-path ${CKPT} \
+  --video-folder /path/to/clips \
+  --jsonl-file /path/to/clip_metadata.jsonl \
+  --result-file /path/to/caption_results_${IDX}.jsonl \
+  --batch-size 16 \
+  --num-chunks ${CHUNKS} \
+  --chunk-idx ${IDX} \
+  > "$LOG_FILE" 2>&1 &
 ```
 
-This script supports **chunked processing**, enabling distributed inference across multiple GPUs.
+This script supports chunked processing, enabling distributed inference across multiple GPUs or machines.
 
----
-
-# 3. Caption Merging
+### 3. Video-level Caption Aggregation
 
 Script:
 
+```text
+data_generation/caption_merger.py
 ```
-caption_merger.py
-```
 
-This script merges all generated captions into a final JSONL file.
-
-It supports **resume functionality** — previously processed videos will be skipped automatically.
-
-### Parameters
+This script merges clip-level captions into final video-level descriptions. It supports resume functionality, so previously processed videos are skipped automatically.
 
 | Parameter       | Description              |
 | --------------- | ------------------------ |
 | `--cap-file`    | Input caption JSONL file |
-| `--result-file` | Output merged file       |
+| `--result-file` | Output merged JSONL file |
 | `--num-workers` | Number of workers        |
 
-### Example
+Example:
 
 ```bash
 cd data_generation
 
 python caption_merger.py \
-    --cap-file /path/to/caption_data.jsonl \
-    --result-file /path/to/final_output.jsonl \
-    --num-workers 50
+  --cap-file /path/to/caption_data.jsonl \
+  --result-file /path/to/final_output.jsonl \
+  --num-workers 50
 ```
 
 ---
 
-# Evaluation
+## Evaluation
 
-The evaluation pipeline is located in:
+The evaluation code is provided in:
 
-```
+```text
 evaluate/
 ```
 
-It supports evaluation for:
+LoVR supports four retrieval settings:
 
-* **Text-to-Video Retrieval**
-* **Video-to-Text Retrieval**
-* **Text-to-Clip Retrieval**
-* **Clip-to-Text Retrieval**
+| Setting                 | Query             | Target            |
+| ----------------------- | ----------------- | ----------------- |
+| Text-to-Video Retrieval | Text              | Long video        |
+| Video-to-Text Retrieval | Long video        | Text              |
+| Text-to-Clip Retrieval  | Text              | Fine-grained clip |
+| Clip-to-Text Retrieval  | Fine-grained clip | Text              |
 
-### Directory Description
+The evaluation scripts are provided as shell scripts:
 
-| Directory            | Description                      |
-| -------------------- | -------------------------------- |
-| `evaluate/models/`   | Model-specific implementations   |
-| `evaluate/run_*.sh`  | Evaluation scripts               |
-| `evaluate/README.md` | Detailed evaluation instructions |
+```text
+evaluate/run_*.sh
+```
 
-Supported baseline models include:
+Please see `evaluate/README.md` for detailed instructions on running each baseline.
+
+---
+
+## Baseline Models
+
+The repository includes evaluation implementations for representative multimodal retrieval models:
 
 * CLIP
 * SigLIP
@@ -212,43 +308,25 @@ Supported baseline models include:
 * LanguageBind
 * MM-Embed
 
----
+Pretrained model weights are available via ModelScope:
 
-# Model Weights
-
-Pretrained model weights are available via **ModelScope**:
-
-```
+```text
 thirstylearning/lovr_models
 ```
 
-Download the weights and place them under:
+Download the model weights and place them under:
 
-```
+```text
 evaluate/models/
 ```
 
-Each model should reside in its own subdirectory.
+Each model should be placed in its own subdirectory.
 
 ---
 
-# Responsible Use
+## Citation
 
-The LoVR dataset is intended for **academic research and educational purposes only**.
-
-Users must not use this dataset to develop systems that are:
-
-* harmful
-* discriminatory
-* privacy-invasive
-
-Please ensure compliance with **ethical AI research guidelines**.
-
----
-
-# Citation
-
-If you find **LoVR** useful in your research, please cite:
+If you find LoVR useful for your research, please cite our paper:
 
 ```bibtex
 @article{cai2025lovr,
