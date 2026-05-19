@@ -37,14 +37,6 @@ LoVR provides:
 
 ---
 
-## News
-
-* **2025-05**: LoVR paper released on arXiv.
-* **2025-05**: Dataset released on HuggingFace.
-* **2025-05**: Evaluation scripts and baseline model implementations released.
-
----
-
 ## Benchmark Statistics
 
 | Item                            |                                                   Number |
