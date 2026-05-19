@@ -3,8 +3,6 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2505.13928"><img src="https://img.shields.io/badge/arXiv-2505.13928-b31b1b.svg" alt="arXiv"></a>
   <a href="https://huggingface.co/datasets/debugger123/LoVR-benchmark"><img src="https://img.shields.io/badge/Dataset-HuggingFace-yellow.svg" alt="Dataset"></a>
-  <a href="https://modelscope.cn/models/thirstylearning/lovr_models"><img src="https://img.shields.io/badge/Models-ModelScope-blue.svg" alt="ModelScope"></a>
-  <img src="https://img.shields.io/badge/Task-Long%20Video%20Retrieval-green.svg" alt="Task">
 </p>
 
 <p align="center">
