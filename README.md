@@ -19,7 +19,7 @@ The benchmark contains **467 long videos** and **40,804 fine-grained clips**, wi
 ## Overview
 
 <p align="center">
-  <img src="assets/x1.png" width="90%" alt="Overview of the LoVR benchmark">
+  <img src="asserts/x1.png" width="90%" alt="Overview of the LoVR benchmark">
 </p>
 
 LoVR is motivated by the gap between existing short-video retrieval benchmarks and real-world long-video search scenarios. In practical applications, users often search for events, actions, scenes, or semantic moments that are distributed across long videos. This requires models to perform both local fine-grained understanding and global semantic aggregation.
@@ -76,7 +76,7 @@ Please refer to the dataset page for the complete file structure and metadata fo
 ## Data Construction Pipeline
 
 <p align="center">
-  <img src="assets/x2.png" width="90%" alt="Data construction pipeline of LoVR">
+  <img src="asserts/x2.png" width="90%" alt="Data construction pipeline of LoVR">
 </p>
 
 <p align="center">
